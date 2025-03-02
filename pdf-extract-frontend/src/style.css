@@ -1,0 +1,161 @@
+/* Luxurious Glassmorphism Background */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Elegant Floating Blur Elements */
+body::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 153, 255, 0.25) 0%, rgba(0, 153, 255, 0) 70%);
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: -1;
+}
+
+body::after {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  right: -100px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(255, 104, 204, 0.3) 0%, rgba(255, 104, 204, 0) 70%);
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+}
+
+/* Elegant Glass Container */
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.container:hover {
+  transform: translateY(-5px);
+}
+
+/* Stylish Heading */
+h1 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #f8f9fa;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* üñº Drag & Drop Zone */
+.drop-zone {
+  border: 3px dashed rgba(255, 255, 255, 0.5);
+  padding: 24px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  border-color: #0099ff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.drop-zone p {
+  font-size: 15px;
+  color: #cccccc;
+}
+
+/* üéõÔ∏è Buttons */
+button {
+  background: linear-gradient(135deg, #0099ff 0%, #007bff 100%);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  font-size: 17px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0, 153, 255, 0.5);
+  position: relative;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  box-shadow: 0 10px 22px rgba(0, 153, 255, 0.6);
+}
+
+button:disabled {
+  background: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* üìù Analysis Output */
+.output {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 22px;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  color: white;
+}
+
+/* üìã Copy Icon */
+.copy-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  color: #cccccc;
+  transition: 0.3s;
+}
+
+.copy-icon:hover {
+  color: #0099ff;
+}
+
+/* ‚ö° Smooth Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.container,
+.drop-zone,
+button,
+.output {
+  animation: fadeIn 0.6s ease-in-out;
+}

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: img-desc
-        image: stackup7/img_desc_service:latest
+        image: dhbw23jk/img_desc_service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5003

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: api-docs-aggregator
-        image: stackup7/api_docs_aggregator:latest
+        image: dhbw23jk/api_docs_aggregator:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80

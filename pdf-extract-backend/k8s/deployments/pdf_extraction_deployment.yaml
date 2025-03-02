@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: pdf-extraction
-        image: stackup7/pdf_extraction_service:latest
+        image: dhbw23jk/pdf_extraction_service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5001

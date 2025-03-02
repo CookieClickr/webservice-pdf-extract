@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: stackup7/api_gateway:latest
+        image: dhbw23jk/api_gateway:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80

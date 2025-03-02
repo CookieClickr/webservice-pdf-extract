@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: verwaltungs
-        image: stackup7/verwaltungs_service:latest
+        image: dhbw23jk/verwaltungs_service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5002

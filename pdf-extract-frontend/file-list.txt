@@ -1,0 +1,7 @@
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\App.vue
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\assets
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\components
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\main.js
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\style.css
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\assets\vue.svg
+C:\Users\KatharinaHeller\vue-pdf-analyzer\src\components\HelloWorld.vue

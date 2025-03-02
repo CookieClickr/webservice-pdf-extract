@@ -1,0 +1,4 @@
+Flask==2.2.5
+flask_cors==5.0.1
+flask_swagger_ui==4.11.1
+Requests==2.32.3

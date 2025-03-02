@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-docs-aggregator-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-docs-aggregator
+  template:
+    metadata:
+      labels:
+        app: api-docs-aggregator
+    spec:
+      containers:
+      - name: api-docs-aggregator
+        image: stackup7/api_docs_aggregator:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

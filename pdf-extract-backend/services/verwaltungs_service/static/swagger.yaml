@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: Verwaltungs-Service API
+  version: "1.0.0"
+  description: >
+    Dieser Service empfängt eine PDF (als Base64-codierter String) über den Endpunkt `/analyse-pdf`.
+    Intern wird die PDF an den **pdf-extract-service** (Route `/pdf-extract`) weitergereicht, der
+    den PDF-Inhalt als Markdown sowie ein Dictionary der Bilder (Bildname: Base64-codiertes Bild)
+    zurückliefert. Anschließend ruft der Verwaltungs-Service im Loop den **img-desc-service**
+    (Route `/img-desc`) auf, um für jedes Bild eine Beschreibung zu erhalten. Im Markdown werden
+    die Bildnamen durch die erhaltenen Beschreibungen ersetzt und der finale Markdown-Text wird zurückgegeben.
+servers:
+  - url: verwaltungsservice
+paths:
+  /analyse-pdf:
+    post:
+      summary: Analysiert eine PDF und gibt den Markdown-Text mit Bildbeschreibungen zurück
+      description: >
+        Dieser Endpunkt nimmt eine PDF entgegen, leitet sie an den pdf-extract-service weiter und
+        verwendet die Rückgabe (Markdown und Bilder-Dictionary), um durch wiederholte Aufrufe an den
+        img-desc-service die Bildnamen im Markdown durch Bildbeschreibungen zu ersetzen.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdfAnalyseRequest'
+      responses:
+        '200':
+          description: Erfolgreiche Analyse der PDF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PdfAnalyseResponse'
+        '400':
+          description: Ungültige Eingabe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    PdfAnalyseRequest:
+      type: object
+      properties:
+        pdf:
+          type: string
+          format: base64
+          description: Base64-codierte PDF-Datei
+      required:
+        - pdf
+    PdfAnalyseResponse:
+      type: object
+      properties:
+        markdown:
+          type: string
+          description: Der finale Markdown-Text, in dem die Bildnamen durch Bildbeschreibungen ersetzt wurden.
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Fehlermeldung
+      required:
+        - message
+    PdfExtractRequest:
+      type: object
+      properties:
+        pdf:
+          type: string
+          format: base64
+          description: Base64-codierte PDF-Datei
+      required:
+        - pdf
+    PdfExtractResponse:
+      type: object
+      properties:
+        markdown:
+          type: string
+          description: Markdown-Inhalt, extrahiert aus der PDF
+        images:
+          type: object
+          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
+          additionalProperties:
+            type: string
+            format: base64
+    ImgDescRequest:
+      type: object
+      properties:
+        images:
+          type: object
+          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
+          additionalProperties:
+            type: string
+            format: base64
+      required:
+        - images
+    ImgDescResponse:
+      type: object
+      properties:
+        descriptions:
+          type: object
+          description: Dictionary mit Bildnamen als Schlüssel und Bildbeschreibungen als Werte
+          additionalProperties:
+            type: string

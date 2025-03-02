@@ -1,0 +1,29 @@
+# Node Modules
+node_modules/
+
+# Virtuelle Umgebungen
+venv/
+.env
+*.env
+
+# Betriebssystem-spezifische Dateien
+.DS_Store
+Thumbs.db
+
+# Log-Dateien
+*.log
+
+# Paketierte Dateien
+*.zip
+*.tar.gz
+*.tgz
+*.packed.json
+
+# Versteckte temporäre Dateien
+.*.swp
+*.swo
+
+# Build-Ordner
+dist/
+build/
+

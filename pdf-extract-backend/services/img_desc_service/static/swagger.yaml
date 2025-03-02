@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: Image Description Service API
+  version: "1.0.0"
+  description: >
+    Dieser Service empfängt ein Dictionary von Bildern (Bildname: Base64-codiertes Bild) über den Endpunkt `/img-desc`
+    und liefert ein Dictionary zurück, in dem jedem Bild eine Beschreibung zugeordnet wird.
+servers:
+  - url: https://your-domain.com
+paths:
+  /img-desc:
+    post:
+      summary: Ermittelt Bildbeschreibungen
+      description: >
+        Dieser Endpunkt nimmt ein Dictionary von Bildern entgegen, verarbeitet diese (z. B. durch Machine Learning-Algorithmen oder durch Aufrufe weiterer Services)
+        und liefert ein Dictionary zurück, in dem jedem Bild eine Beschreibung zugeordnet ist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImgDescRequest'
+      responses:
+        '200':
+          description: Erfolgreiche Ermittlung der Bildbeschreibungen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImgDescResponse'
+        '400':
+          description: Ungültige Eingabe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ImgDescRequest:
+      type: object
+      properties:
+        images:
+          type: object
+          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
+          additionalProperties:
+            type: string
+            format: base64
+      required:
+        - images
+    ImgDescResponse:
+      type: object
+      properties:
+        descriptions:
+          type: object
+          description: Dictionary mit Bildnamen als Schlüssel und den jeweiligen Bildbeschreibungen als Werte
+          additionalProperties:
+            type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Fehlermeldung
+      required:
+        - message

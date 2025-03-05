@@ -19,7 +19,7 @@ import PdfOutput from "./components/PdfOutput.vue";
 /**
  * Root App Component
  * Orchestrates PDF uploading, analysis, and output display.
- *
+ * !!!!hallo test
  * @component
  */
 export default {

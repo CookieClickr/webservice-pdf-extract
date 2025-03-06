@@ -1,53 +1,56 @@
-from flask import Flask, request, send_from_directory, jsonify
-from flask_swagger_ui import get_swaggerui_blueprint
+import base64
+import tempfile
+import os
+from flask import Flask, request, jsonify
+from google import genai
+from PIL import Image
+from io import BytesIO
+from dotenv import load_dotenv
+
+# Load API key from .env
+load_dotenv()
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = Flask(__name__)
 
-# Swagger UI Konfiguration für Image-Description-Service
-SWAGGER_URL = '/docs'
-API_URL = '/static/swagger.yaml'
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={'app_name': "Image-Description-Service API"}
-)
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-@app.route('/static/<path:path>')
-def send_static(path):
-    return send_from_directory('static', path)
+def save_temp_image(img_b64):
+    image_data = base64.b64decode(img_b64)
+    image = Image.open(BytesIO(image_data))
 
-@app.route('/img-desc', methods=['POST'])
-def img_desc():
-    """
-    Erwartet ein JSON im Format:
-    {
-      "filename": "page_0_Figure_3.jpeg",
-      "data": "<base64-string>"
-    }
-    Gibt als Dummy-Antwort:
-    {
-      "image_desc": {
-        "page_0_Figure_3.jpeg": {
-          "data": "Beschreibung für page_0_Figure_3.jpeg"
-        }
-      }
-    }
-    """
-    data = request.get_json()
-    filename = data.get("filename", "unbekannt")
-    # "data" ist der Base64-Inhalt, wird hier nicht weiterverarbeitet, da es ein Dummy ist
+    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_file:
+        image.save(temp_file, format="JPEG")
+        return temp_file.name
 
-    # Erzeuge eine Dummy-Beschreibung
-    description = f"Beschreibung für {filename}"
 
-    return jsonify({
-        "image_desc": {
-            filename: {
-                "data": description
+@app.route("/describe_image", methods=["POST"])
+def describe_image():
+    try:
+        data = request.json
+        if "filename" not in data or "data" not in data:
+            return jsonify({"error": "Invalid input format"}), 400
+
+        image_path = save_temp_image(data["data"])
+
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=[
+                'Describe this image in about 100 words.',
+                Image.open(image_path)
+            ]
+        )
+
+        os.remove(image_path)  # Temporäre Datei löschen
+
+        return jsonify({
+            "image_desc": {
+                data["filename"]: {"data": response.text}
             }
-        }
-    }), 200
+        })
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5003)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5002, debug=True)

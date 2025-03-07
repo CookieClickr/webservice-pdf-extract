@@ -27,28 +27,51 @@
         accept="application/pdf"
       />
     </div>
+
+    <!-- Overlay mit YouTube-nocookie-Video -->
+    <div v-if="showOverlay" class="overlay-container">
+      <div class="overlay-background"></div>
+      <div class="overlay-content">
+        <div class="video-wrapper">
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube-nocookie.com/embed/5KnSKS9S0AQ?autoplay=1&controls=0"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="overlay-text">Spiele werden geladen ...</p>
+      </div>
+    </div>
+
     <DragAndDropNav
       @clear-input="clearInput"
       @start-analysis="startAnalysis"
       :file-selected="!!selectedFile"
+      :disabled="generating"
       class="p-4"
     />
   </div>
 </template>
 
 <script>
-import DragAndDropNav from './DragAndDropNav.vue'
+
 import axios from 'axios'
 import { store } from '@/store'
+import DragAndDropNav from './DragAndDropNav.vue'
 
 export default {
-  name: "DragAndDrop",
+  name: 'DragAndDrop',
   components: {
-    DragAndDropNav,
+    DragAndDropNav
   },
   data() {
     return {
       selectedFile: null,
+      generating: false,   // Buttons deaktivieren
+      showOverlay: false   // Subway Surfers (YouTube) Overlay
     }
   },
   methods: {
@@ -81,29 +104,37 @@ export default {
       this.selectedFile = null
       this.$refs.fileInput.value = ''
     },
-    startAnalysis() {
-      if (this.selectedFile) {
-        const reader = new FileReader()
-        reader.onload = async (e) => {
-          const base64PDF = e.target.result.split(',')[1]
-          try {
-            // API-Aufruf: Wir senden ein JSON-Objekt mit der Base64-codierten PDF
-            const response = await axios.post('/analyse-pdf', { pdf: base64PDF })
-            // Speichere die erhaltenen Flashcards im globalen Store (alte Karten werden überschrieben)
-            store.flashcards = response.data.flashcards || []
-            // Navigiere zur Flashcards-Ansicht
-            this.$router.push('/flashcards')
-          } catch (error) {
-            alert('Fehler beim Hochladen oder Generieren der Karteikarten.')
-            console.error(error)
-          }
-        }
-        reader.readAsDataURL(this.selectedFile)
-      } else {
+    async startAnalysis() {
+      if (!this.selectedFile) {
         alert('Bitte zuerst eine PDF-Datei auswählen.')
+        return
       }
-    },
-  },
+      // Buttons deaktivieren, Overlay einblenden
+      this.generating = true
+      this.showOverlay = true
+
+      // Datei lesen und an Backend schicken
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64PDF = e.target.result.split(',')[1]
+        try {
+          const response = await axios.post('/analyse-pdf', { pdf: base64PDF })
+          store.flashcards = response.data.flashcards || []
+          // Ab hier fertig -> Overlay weg, Buttons wieder aktiv
+          this.generating = false
+          this.showOverlay = false
+          // Navigation
+          this.$router.push('/flashcards')
+        } catch (error) {
+          alert('Fehler beim Hochladen oder Generieren der Karteikarten.')
+          console.error(error)
+          this.generating = false
+          this.showOverlay = false
+        }
+      }
+      reader.readAsDataURL(this.selectedFile)
+    }
+  }
 }
 </script>
 
@@ -132,5 +163,48 @@ export default {
 
 .drag-and-drop:hover .bi-file-earmark-pdf {
   transform: scale(1.1);
+}
+
+/* Overlay-Stile */
+.overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999; /* ganz oben */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.overlay-content {
+  position: relative;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+}
+
+.video-wrapper {
+  background: #000;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.overlay-text {
+  font-size: 1.2rem;
+  margin-top: 0;
 }
 </style>

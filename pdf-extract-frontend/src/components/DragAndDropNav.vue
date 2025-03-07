@@ -3,14 +3,14 @@
     <button
       class="btn btn-outline-secondary"
       @click="$emit('clear-input')"
-      :disabled="!fileSelected"
+      :disabled="disabled || !fileSelected"
     >
       Input Löschen
     </button>
     <button
       class="btn btn-primary"
       @click="$emit('start-analysis')"
-      :disabled="!fileSelected"
+      :disabled="disabled || !fileSelected"
     >
       Analyse starten
     </button>
@@ -19,12 +19,17 @@
 
 <script>
 export default {
-  name: 'AppDragAndDropNav', // Mehrwortname (z.B. "AppDragAndDropNav")
+  name: 'DragAndDropNav',
   props: {
     fileSelected: {
       type: Boolean,
       required: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
+  emits: ['clear-input', 'start-analysis']
 }
 </script>

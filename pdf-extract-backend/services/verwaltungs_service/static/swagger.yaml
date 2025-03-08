@@ -1,105 +1,74 @@
-openapi: 3.0.0
+openapi: '3.0.0'
 info:
-  title: Verwaltungs-Service API
-  version: "1.0.0"
-  description: >
-    Dieser Service empfängt eine PDF (als Base64-codierter String) über den Endpunkt `/analyse-pdf`.
-    Intern wird die PDF an den **pdf-extract-service** (Route `/pdf-extract`) weitergereicht, der
-    den PDF-Inhalt als Markdown sowie ein Dictionary der Bilder (Bildname: Base64-codiertes Bild)
-    zurückliefert. Anschließend ruft der Verwaltungs-Service im Loop den **img-desc-service**
-    (Route `/img-desc`) auf, um für jedes Bild eine Beschreibung zu erhalten. Im Markdown werden
-    die Bildnamen durch die erhaltenen Beschreibungen ersetzt und der finale Markdown-Text wird zurückgegeben.
+  title: PDF Analysis Service Central Control API
+  description: API for analyzing PDF files, extracting content, describing images, and generating flashcards out of those
+  version: '1.0'
 servers:
-  - url: verwaltungsservice
+  - url: /
 paths:
   /analyse-pdf:
     post:
-      summary: Analysiert eine PDF und gibt den Markdown-Text mit Bildbeschreibungen zurück
-      description: >
-        Dieser Endpunkt nimmt eine PDF entgegen, leitet sie an den pdf-extract-service weiter und
-        verwendet die Rückgabe (Markdown und Bilder-Dictionary), um durch wiederholte Aufrufe an den
-        img-desc-service die Bildnamen im Markdown durch Bildbeschreibungen zu ersetzen.
+      summary: Analyze PDF and generate flashcards
+      operationId: analysePdf
       requestBody:
+        description: Base64 encoded PDF data
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PdfAnalyseRequest'
+              type: object
+              required:
+                - pdf
+              properties:
+                pdf:
+                  type: string
+                  format: base64
+                  description: Base64 encoded PDF data
       responses:
         '200':
-          description: Erfolgreiche Analyse der PDF
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PdfAnalyseResponse'
+                type: object
+                properties:
+                  flashcards:
+                    type: array
+                    description: Generated flashcards from PDF content
+                    items:
+                      $ref: '#/components/schemas/Flashcard'
         '400':
-          description: Ungültige Eingabe
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    PdfAnalyseRequest:
+    Flashcard:
       type: object
       properties:
-        pdf:
+        title:
           type: string
-          format: base64
-          description: Base64-codierte PDF-Datei
-      required:
-        - pdf
-    PdfAnalyseResponse:
-      type: object
-      properties:
-        markdown:
+          description: Title of the flashcard
+        front:
           type: string
-          description: Der finale Markdown-Text, in dem die Bildnamen durch Bildbeschreibungen ersetzt wurden.
+          description: Front side of the flashcard (question/problem)
+        back:
+          type: string
+          description: Back side of the flashcard (answer/solution)
     Error:
       type: object
       properties:
-        message:
+        error:
           type: string
-          description: Fehlermeldung
-      required:
-        - message
-    PdfExtractRequest:
-      type: object
-      properties:
-        pdf:
+          description: Error message
+        details:
           type: string
-          format: base64
-          description: Base64-codierte PDF-Datei
-      required:
-        - pdf
-    PdfExtractResponse:
-      type: object
-      properties:
-        markdown:
-          type: string
-          description: Markdown-Inhalt, extrahiert aus der PDF
-        images:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
-          additionalProperties:
-            type: string
-            format: base64
-    ImgDescRequest:
-      type: object
-      properties:
-        images:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
-          additionalProperties:
-            type: string
-            format: base64
-      required:
-        - images
-    ImgDescResponse:
-      type: object
-      properties:
-        descriptions:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und Bildbeschreibungen als Werte
-          additionalProperties:
-            type: string
+          description: Additional error details

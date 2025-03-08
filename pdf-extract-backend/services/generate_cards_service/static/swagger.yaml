@@ -1,49 +1,37 @@
 openapi: '3.0.0'
 info:
-  title: Image Description Service API
-  description: API for generating descriptions from images using Gemini AI
+  title: Flashcard Generator API
+  description: API for generating flashcards from markdown text
   version: '1.0'
 servers:
   - url: /
 paths:
-  /describe_image:
+  /generate_cards:
     post:
-      summary: Generate description for an image
-      operationId: describeImage
+      summary: Generate flashcards from markdown text
+      operationId: generateFlashcards
       requestBody:
-        description: Base64 encoded image data with filename
+        description: Markdown text to generate flashcards from
         required: true
         content:
           application/json:
             schema:
               type: object
               required:
-                - filename
-                - data
+                - markdown_text
               properties:
-                filename:
+                markdown_text:
                   type: string
-                  description: The filename of the image
-                data:
-                  type: string
-                  description: Base64 encoded image data
-                  format: base64
+                  description: The markdown text to generate flashcards from
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  image_desc:
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        data:
-                          type: string
-                          description: Text description of the image
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flashcard'
         '400':
           description: Bad request
           content:
@@ -58,6 +46,18 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
+    Flashcard:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the flashcard
+        front:
+          type: string
+          description: Front side of the flashcard (question/problem)
+        back:
+          type: string
+          description: Back side of the flashcard (answer/solution)
     Error:
       type: object
       properties:

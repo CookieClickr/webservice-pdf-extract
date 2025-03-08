@@ -1,67 +1,70 @@
-openapi: 3.0.0
+openapi: '3.0.0'
 info:
   title: PDF Extraction Service API
-  version: "1.0.0"
-  description: >
-    Dieser Service empfängt eine PDF (als Base64-codierter String) über den Endpunkt `/pdf-extract`
-    und extrahiert daraus den Inhalt als Markdown sowie ein Dictionary der enthaltenen Bilder.
-    Die Antwort liefert den Markdown-Text und ein Dictionary, in dem jeder Bildname einem Base64-codierten Bild zugeordnet ist.
+  description: API for extracting markdown content and images from PDF files
+  version: '1.0'
 servers:
-  - url: https://your-domain.com
+  - url: /
 paths:
   /pdf-extract:
     post:
-      summary: Extrahiert den Inhalt einer PDF
-      description: >
-        Dieser Endpunkt nimmt eine PDF entgegen, extrahiert den Inhalt als Markdown und liefert zusätzlich
-        ein Dictionary der Bilder zurück.
+      summary: Extract content from PDF file
+      operationId: extractPdf
       requestBody:
+        description: PDF file to process
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PdfExtractRequest'
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: PDF file to extract content from
       responses:
         '200':
-          description: Erfolgreiche Extraktion der PDF
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PdfExtractResponse'
+                type: object
+                properties:
+                  markdown:
+                    type: string
+                    description: Extracted markdown content from the PDF
+                  metadata:
+                    type: object
+                    description: Metadata extracted from the PDF
+                  images:
+                    type: object
+                    description: Extracted images as base64 encoded strings
+                    additionalProperties:
+                      type: object
+                      properties:
+                        data:
+                          type: string
+                          format: base64
+                          description: Base64 encoded image data
         '400':
-          description: Ungültige Eingabe
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    PdfExtractRequest:
-      type: object
-      properties:
-        pdf:
-          type: string
-          format: base64
-          description: Base64-codierte PDF-Datei
-      required:
-        - pdf
-    PdfExtractResponse:
-      type: object
-      properties:
-        markdown:
-          type: string
-          description: Markdown-Inhalt, extrahiert aus der PDF
-        images:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
-          additionalProperties:
-            type: string
-            format: base64
     Error:
       type: object
       properties:
-        message:
+        error:
           type: string
-          description: Fehlermeldung
-      required:
-        - message
+          description: Error message

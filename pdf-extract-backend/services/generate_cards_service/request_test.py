@@ -1,7 +1,7 @@
 import requests
 import json
 
-url = "http://localhost:5005/generate_cards"
+url = "http://127.0.0.1:5001/generate_cards"
 headers = {"Content-Type": "application/json"}
 data = {
     "markdown_text": "# Kapitel 1\n\nHier ist ein Beispieltext.\n\n## Unterkapitel\n\nMehr Inhalt..."

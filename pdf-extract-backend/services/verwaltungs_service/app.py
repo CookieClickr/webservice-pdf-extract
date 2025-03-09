@@ -33,7 +33,7 @@ def analyse_pdf():
         with open(temp_pdf_path, 'rb') as f:
             files = {'file': f}
             pdf_extract_response = requests.post(
-                "http://127.0.0.1:5003/pdf-extract",
+                "http://pdf-extraction-service:5003/pdf-extract",
                 files=files
             )
     except Exception as e:
@@ -61,7 +61,7 @@ def analyse_pdf():
 
         try:
             img_desc_response = requests.post(
-                "http://127.0.0.1:5002/describe_image",
+                "http://image-description-service:5002/describe_image",
                 json={"filename": filename, "data": base64_str}
             )
         except Exception as e:
@@ -79,7 +79,7 @@ def analyse_pdf():
     # Aufruf des generate_cards_service
     try:
         generate_cards_response = requests.post(
-            " http://127.0.0.1:5001/generate_cards",
+            " http://generate-cards-service:5001/generate_cards",
             json={"markdown_text": markdown}
         )
     except Exception as e:

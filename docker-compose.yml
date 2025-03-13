@@ -1,35 +1,31 @@
-version: '3.9'
-
 services:
   pdf-extraction-service:
     build:
-      context: ./pdf-extraction-service
+      context: ./pdf-extract-backend/services/pdf_extraction_service
     container_name: pdf-extraction-service
     ports:
       - "5003:5003"
 
   generate-cards-service:
     build:
-      context: ./generate-cards-service
+      context: ./pdf-extract-backend/services/generate_cards_service
     container_name: generate-cards-service
     ports:
       - "5001:5001"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file: ./pdf-extract-backend/services/generate_cards_service/.env
 
   image-description-service:
     build:
-      context: ./image-description-service
+      context: ./pdf-extract-backend/services/img_desc_service
     container_name: image-description-service
     ports:
       - "5002:5002"
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file: ./pdf-extract-backend/services/img_desc_service/.env
 
   pdf-analysis-service:
     build:
-      context: ./pdf-analysis-service
-    container_name: pdf-analysis-service
+      context: ./pdf-extract-backend/services/verwaltungs_service
+    container_name: verwaltungs_service
     ports:
       - "5004:5004"
     depends_on:

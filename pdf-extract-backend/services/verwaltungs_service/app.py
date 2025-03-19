@@ -53,7 +53,7 @@ def analyse_pdf():
 
     extract_data = pdf_extract_response.json()
     markdown = extract_data.get("markdown", "")
-    images = extract_data.get("images", {})
+    images = extract_data.get("images", {}) # data:{"img_name":"img_b64"}
 
     # Für jedes Bild den Image-Desc-Service aufrufen und Markdown ersetzen
     for filename, img_info in images.items():

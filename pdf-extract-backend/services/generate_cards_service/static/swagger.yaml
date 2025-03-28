@@ -1,0 +1,70 @@
+openapi: '3.0.0'
+info:
+  title: PDF Extraction Service API
+  description: API for extracting markdown content and images from PDF files
+  version: '1.0'
+servers:
+  - url: /
+paths:
+  /pdf-extract:
+    post:
+      summary: Extract content from PDF file
+      operationId: extractPdf
+      requestBody:
+        description: PDF file to process
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: PDF file to extract content from
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  markdown:
+                    type: string
+                    description: Extracted markdown content from the PDF
+                  metadata:
+                    type: object
+                    description: Metadata extracted from the PDF
+                  images:
+                    type: object
+                    description: Extracted images as base64 encoded strings
+                    additionalProperties:
+                      type: object
+                      properties:
+                        data:
+                          type: string
+                          format: base64
+                          description: Base64 encoded image data
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message

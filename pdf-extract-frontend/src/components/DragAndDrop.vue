@@ -42,7 +42,7 @@
             allowfullscreen
           ></iframe>
         </div>
-        <p class="overlay-text">Spiele werden geladen ...</p>
+        <p class="overlay-text">Karten werden geladen ...</p>
       </div>
     </div>
 

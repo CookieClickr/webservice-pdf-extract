@@ -11,15 +11,6 @@ import json
 
 app = Flask(__name__)
 
-# Swagger UI Konfiguration für PDF-Extraction-Service
-SWAGGER_URL = '/docs'
-API_URL = '/static/swagger.yaml'
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={'app_name': "PDF-Extraction-Service API"}
-)
-app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 # Konfiguration für den PdfConverter
 config = {
@@ -48,10 +39,6 @@ def serialize_image(image):
         image_bytes = buffer.getvalue()
     base64_str = base64.b64encode(image_bytes).decode('utf-8')
     return {"data": base64_str}
-
-@app.route('/static/<path:path>')
-def send_static(path):
-    return send_from_directory('static', path)
 
 @app.route('/pdf-extract', methods=['POST'])
 def extract_pdf():

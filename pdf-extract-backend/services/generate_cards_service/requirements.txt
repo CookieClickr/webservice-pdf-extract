@@ -1,2 +1,3 @@
 Flask[async]
 openai==1.65.4
+dotenv

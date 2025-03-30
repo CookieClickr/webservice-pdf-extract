@@ -12,7 +12,7 @@ services:
     container_name: generate-cards-service
     ports:
       - "5001:5001"
-    env_file: ./pdf-extract-backend/services/generate_cards_service/.env
+    env_file: stack.env
 
   image-description-service:
     build:
@@ -20,7 +20,7 @@ services:
     container_name: image-description-service
     ports:
       - "5002:5002"
-    env_file: ./pdf-extract-backend/services/img_desc_service/.env
+    env_file: stack.env
 
   pdf-analysis-service:
     build:

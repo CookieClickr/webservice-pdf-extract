@@ -110,3 +110,5 @@ ENV/
 # temp dirs
 tmp/
 .tmp/
+
+*.tar

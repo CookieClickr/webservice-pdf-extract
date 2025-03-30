@@ -7,11 +7,25 @@ import re
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)  # erlaubt standardmäßig alle Origins
 
+# Lade die .env-Datei
+load_dotenv()
 
+route_generate_cards_service = os.getenv("ROUTE_GENERATE_CARDS_SERVICE")
+if not route_generate_cards_service:
+    raise RuntimeError("ROUTE_GENERATE_CARDS_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
+
+route_img_desc_service = os.getenv("ROUTE_IMG_DESC_SERVICE")
+if not route_img_desc_service:
+    raise RuntimeError("ROUTE_IMG_DESC_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
+
+route_pdf_extraction_service = os.getenv("ROUTE_PDF_EXTRACTION_SERVICE")
+if not route_pdf_extraction_service:
+    raise RuntimeError("ROUTE_PDF_EXTRACTION_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
 
 @app.route('/analyse-pdf', methods=['POST'])
 def analyse_pdf():
@@ -35,7 +49,7 @@ def analyse_pdf():
         with open(temp_pdf_path, 'rb') as f:
             files = {'file': f}
             pdf_extract_response = requests.post(
-                "http://pdf-extraction-service:5003/pdf-extract",
+                route_pdf_extraction_service,
                 files=files
             )
     except Exception as e:
@@ -63,7 +77,7 @@ def analyse_pdf():
 
         try:
             img_desc_response = requests.post(
-                "http://image-description-service:5002/describe_image",
+                route_img_desc_service,
                 json={"filename": filename, "data": base64_str}
             )
         except Exception as e:
@@ -81,7 +95,7 @@ def analyse_pdf():
     # Aufruf des generate_cards_service
     try:
         generate_cards_response = requests.post(
-            " http://generate-cards-service:5001/generate_cards",
+            route_generate_cards_service,
             json={"markdown_text": markdown}
         )
     except Exception as e:

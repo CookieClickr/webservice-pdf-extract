@@ -92,6 +92,7 @@ def extract_pdf():
         if os.path.exists(temp_path):
             os.remove(temp_path)
 
+
 with open('static/swagger.yaml', 'r') as f:
     swagger_config = yaml.safe_load(f)
 
@@ -102,7 +103,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': "Image Description Service API"
+        'app_name': "PDF Extraction Service API",
     }
 )
 
@@ -111,7 +112,6 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/swagger.json')
 def swagger_json():
     return jsonify(swagger_config)
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5003, debug=True)

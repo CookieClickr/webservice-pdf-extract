@@ -125,6 +125,26 @@ def generate_flashcards():
 
     return jsonify([card.model_dump() for card in flashcards])
 
+with open('static/swagger.yaml', 'r') as f:
+    swagger_config = yaml.safe_load(f)
+
+SWAGGER_URL = '/swagger'
+API_URL = '/swagger.json'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Image Description Service API"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
+@app.route('/swagger.json')
+def swagger_json():
+    return jsonify(swagger_config)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001, debug=True)

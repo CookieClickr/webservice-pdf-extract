@@ -1,53 +1,37 @@
 openapi: '3.0.0'
 info:
-  title: PDF Extraction Service API
-  description: API for extracting markdown content and images from PDF files
+  title: Flashcard Generator API
+  description: API for generating flashcards from markdown text
   version: '1.0'
 servers:
   - url: /
 paths:
-  /pdf-extract:
+  /generate_cards:
     post:
-      summary: Extract content from PDF file
-      operationId: extractPdf
+      summary: Generate flashcards from markdown text
+      operationId: generateFlashcards
       requestBody:
-        description: PDF file to process
+        description: Markdown text to generate flashcards from
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               required:
-                - file
+                - markdown_text
               properties:
-                file:
+                markdown_text:
                   type: string
-                  format: binary
-                  description: PDF file to extract content from
+                  description: The markdown text to generate flashcards from
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  markdown:
-                    type: string
-                    description: Extracted markdown content from the PDF
-                  metadata:
-                    type: object
-                    description: Metadata extracted from the PDF
-                  images:
-                    type: object
-                    description: Extracted images as base64 encoded strings
-                    additionalProperties:
-                      type: object
-                      properties:
-                        data:
-                          type: string
-                          format: base64
-                          description: Base64 encoded image data
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flashcard'
         '400':
           description: Bad request
           content:
@@ -62,6 +46,18 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
+    Flashcard:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the flashcard
+        front:
+          type: string
+          description: Front side of the flashcard (question/problem)
+        back:
+          type: string
+          description: Back side of the flashcard (answer/solution)
     Error:
       type: object
       properties:

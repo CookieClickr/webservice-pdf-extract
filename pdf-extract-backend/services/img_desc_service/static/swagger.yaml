@@ -1,64 +1,66 @@
-openapi: 3.0.0
+openapi: '3.0.0'
 info:
   title: Image Description Service API
-  version: "1.0.0"
-  description: >
-    Dieser Service empfängt ein Dictionary von Bildern (Bildname: Base64-codiertes Bild) über den Endpunkt `/img-desc`
-    und liefert ein Dictionary zurück, in dem jedem Bild eine Beschreibung zugeordnet wird.
+  description: API for generating descriptions from images using Gemini AI
+  version: '1.0'
 servers:
-  - url: https://your-domain.com
+  - url: /
 paths:
-  /img-desc:
+  /describe_image:
     post:
-      summary: Ermittelt Bildbeschreibungen
-      description: >
-        Dieser Endpunkt nimmt ein Dictionary von Bildern entgegen, verarbeitet diese (z. B. durch Machine Learning-Algorithmen oder durch Aufrufe weiterer Services)
-        und liefert ein Dictionary zurück, in dem jedem Bild eine Beschreibung zugeordnet ist.
+      summary: Generate description for an image
+      operationId: describeImage
       requestBody:
+        description: Base64 encoded image data with filename
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ImgDescRequest'
+              type: object
+              required:
+                - filename
+                - data
+              properties:
+                filename:
+                  type: string
+                  description: The filename of the image
+                data:
+                  type: string
+                  description: Base64 encoded image data
+                  format: base64
       responses:
         '200':
-          description: Erfolgreiche Ermittlung der Bildbeschreibungen
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImgDescResponse'
+                type: object
+                properties:
+                  image_desc:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        data:
+                          type: string
+                          description: Text description of the image
         '400':
-          description: Ungültige Eingabe
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    ImgDescRequest:
-      type: object
-      properties:
-        images:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und Base64-codierten Bildern als Werte
-          additionalProperties:
-            type: string
-            format: base64
-      required:
-        - images
-    ImgDescResponse:
-      type: object
-      properties:
-        descriptions:
-          type: object
-          description: Dictionary mit Bildnamen als Schlüssel und den jeweiligen Bildbeschreibungen als Werte
-          additionalProperties:
-            type: string
     Error:
       type: object
       properties:
-        message:
+        error:
           type: string
-          description: Fehlermeldung
-      required:
-        - message
+          description: Error message

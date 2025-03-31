@@ -175,3 +175,6 @@ Dies dient als schneller Funktionstest und verhindert lange Wartezeiten bei grö
 
 2. Auf dem Docker-Host ist die **Swagger UI** beispielhaft für den **Verwaltungsservice** implementiert und erreichbar unter:  
    [http://10.50.15.53:5004/swagger](http://10.50.15.53:5004/swagger)
+   - Um die API des Verwaltungsservices mit einer Beispiel-PDF (Base64-kodiert) zu testen, liegt im Projektverzeichnis die Datei **`swagger_payload`** bereit.  
+  Der Inhalt dieser Datei kann kopiert und im **Request Body** der Swagger UI eingefügt werden.
+

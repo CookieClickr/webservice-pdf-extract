@@ -1,4 +1,28 @@
-# Projekt Setup Anleitung
+# Zugriff auf den Service über den Docker-Hub
+
+### Voraussetzungen
+- Verbindung mit dem VPN der DHBW
+- Zugangsdaten für den Portainer
+
+### Schritte zur Nutzung des Flashcard-Generators
+
+1. **Mit dem VPN der DHBW verbinden**
+2. **Portainer öffnen:**  
+   http://10.50.15.53:9000
+3. **Mit den entsprechenden Zugangsdaten anmelden**
+4. **Mit dem Server verbinden** und in der linken Navigation **„Stacks“** auswählen
+5. Den Stack **„Flashcard-Generator“** auswählen
+6. Auf das **Portmapping des Frontends (8080:5000)** klicken  
+   → Das Frontend sollte sich im Browser öffnen
+7. Auf die **Drag-and-Drop-Oberfläche** klicken, um eine PDF auszuwählen  
+   - Empfehlung: die im Projekt enthaltene `test.pdf`, um lange Wartezeiten zu vermeiden
+8. Nach dem Upload der PDF auf **„Analyse PDF“** klicken
+9. Nach einer (hoffentlich kurzen) Wartezeit werden die **generierten Karteikarten** angezeigt
+10. **Viel Spaß beim Lernen**
+
+---
+
+# Projekt Setup Anleitung Lokal
 
 Dieses Projekt besteht aus zwei Hauptkomponenten:
 
@@ -17,8 +41,8 @@ Dieses Projekt besteht aus zwei Hauptkomponenten:
 ## 1. Repository klonen
 
 ```bash
-git clone <REPOSITORY_URL>
-cd <REPOSITORY_VERZEICHNIS>
+git clone https://github.com/CookieClickr/webservice-pdf-extract.git 
+cd webservice-pdf-extract
 ```
 
 ---
@@ -139,5 +163,15 @@ Dies dient als schneller Funktionstest und verhindert lange Wartezeiten bei grö
 3. Ergebnisse abwarten
 
 ---
+## Zugriff auf die Swagger API
 
-Viel Erfolg 🚀
+### Lokal
+
+1. Nachdem das lokale Projekt aufgebaut wurde, ist die **Swagger API der einzelnen Services** unter  
+   `http://localhost:<jeweiliger-Port>/swagger` erreichbar  
+   (ersetze `<jeweiliger-Port>` mit dem Port des gewünschten Services)
+
+### Auf dem Docker-Host
+
+2. Auf dem Docker-Host ist die **Swagger UI** beispielhaft für den **Verwaltungsservice** implementiert und erreichbar unter:  
+   [http://10.50.15.53:5004/swagger](http://10.50.15.53:5004/swagger)

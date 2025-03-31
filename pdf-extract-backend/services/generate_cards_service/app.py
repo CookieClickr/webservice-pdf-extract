@@ -124,7 +124,7 @@ def generate_flashcards():
     flashcards = loop.run_until_complete(generate_cards(markdown_text))
 
     return jsonify([card.model_dump() for card in flashcards])
-
+    
 with open('static/swagger.yaml', 'r') as f:
     swagger_config = yaml.safe_load(f)
 
@@ -145,7 +145,6 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 @app.route('/swagger.json')
 def swagger_json():
     return jsonify(swagger_config)
-
 
 
 if __name__ == "__main__":

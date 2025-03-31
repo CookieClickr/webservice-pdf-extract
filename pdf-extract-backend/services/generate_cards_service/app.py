@@ -135,15 +135,17 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL,
     config={
-        'app_name': "Image Description Service API"
+        'app_name': "Flashcard Generator API"
     }
 )
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
+
 @app.route('/swagger.json')
 def swagger_json():
     return jsonify(swagger_config)
+
 
 
 if __name__ == "__main__":

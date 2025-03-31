@@ -1,34 +1,56 @@
+version: "3.8"
+
 services:
   pdf-extraction-service:
-    build:
-      context: ./pdf-extract-backend/services/pdf_extraction_service
+    image: pdf_extraction_service:latest
     container_name: pdf-extraction-service
     ports:
       - "5003:5003"
+    networks:
+      - app-network
 
   generate-cards-service:
-    build:
-      context: ./pdf-extract-backend/services/generate_cards_service
+    image: generate_cards_service:latest
     container_name: generate-cards-service
     ports:
       - "5001:5001"
-    env_file: .env
+    env_file: stack.env
+    networks:
+      - app-network
 
   image-description-service:
-    build:
-      context: ./pdf-extract-backend/services/img_desc_service
+    image: img_desc_service:latest
     container_name: image-description-service
     ports:
       - "5002:5002"
-    env_file: .env
+    env_file: stack.env
+    networks:
+      - app-network
 
-  pdf-analysis-service:
-    build:
-      context: ./pdf-extract-backend/services/verwaltungs_service
+  verwaltungs-service:
+    image: verwaltungs_service:latest
     container_name: verwaltungs_service
     ports:
       - "5004:5004"
+    env_file: stack.env
     depends_on:
       - pdf-extraction-service
       - image-description-service
       - generate-cards-service
+    networks:
+      - app-network
+
+  pdf-frontend:
+    image: pdf_extract_frontend:latest
+    container_name: pdf_extract_frontend
+    ports:
+      - "5000:8080"
+    env_file: stack.env
+    networks:
+      - app-network
+    depends_on:
+      - verwaltungs-service
+
+networks:
+  app-network:
+    driver: bridge

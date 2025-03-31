@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, jsonify
+from flask import Flask, request, send_from_directory, jsonify, make_response
 import base64
 import tempfile
 import os
@@ -7,25 +7,20 @@ import re
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 import yaml
-from dotenv import load_dotenv
 
 app = Flask(__name__)
-CORS(app)  # erlaubt standardmäßig alle Origins
 
-# Lade die .env-Datei
-load_dotenv()
+# CORS aktivieren für alle Routen & Origins
+CORS(app, resources={r"/analyse-pdf": {"origins": "*"}}, supports_credentials=True)
 
-route_generate_cards_service = os.getenv("ROUTE_GENERATE_CARDS_SERVICE")
-if not route_generate_cards_service:
-    raise RuntimeError("ROUTE_GENERATE_CARDS_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
-
-route_img_desc_service = os.getenv("ROUTE_IMG_DESC_SERVICE")
-if not route_img_desc_service:
-    raise RuntimeError("ROUTE_IMG_DESC_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
-
-route_pdf_extraction_service = os.getenv("ROUTE_PDF_EXTRACTION_SERVICE")
-if not route_pdf_extraction_service:
-    raise RuntimeError("ROUTE_PDF_EXTRACTION_SERVICE ist nicht gesetzt. Bitte in der Umgebungsvariable hinterlegen.")
+# Manuelle OPTIONS-Behandlung für Preflight
+@app.route('/analyse-pdf', methods=['OPTIONS'])
+def handle_preflight():
+    response = make_response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/analyse-pdf', methods=['POST'])
 def analyse_pdf():
@@ -49,7 +44,7 @@ def analyse_pdf():
         with open(temp_pdf_path, 'rb') as f:
             files = {'file': f}
             pdf_extract_response = requests.post(
-                route_pdf_extraction_service,
+                "http://127.0.0.1:5003/pdf-extract",
                 files=files
             )
     except Exception as e:
@@ -69,18 +64,17 @@ def analyse_pdf():
 
     extract_data = pdf_extract_response.json()
     markdown = extract_data.get("markdown", "")
-    images = extract_data.get("images", {}) # data:{"img_name":"img_b64"}
+    images = extract_data.get("images", {})
 
     # Für jedes Bild den Image-Desc-Service aufrufen und Markdown ersetzen
     for filename, img_info in images.items():
         base64_str = img_info.get("data", "")
-
         try:
             img_desc_response = requests.post(
-                route_img_desc_service,
+                "http://127.0.0.1:5002/describe_image",
                 json={"filename": filename, "data": base64_str}
             )
-        except Exception as e:
+        except Exception:
             desc = "Fehler bei Bildbeschreibung"
         else:
             if img_desc_response.status_code == 200:
@@ -95,7 +89,7 @@ def analyse_pdf():
     # Aufruf des generate_cards_service
     try:
         generate_cards_response = requests.post(
-            route_generate_cards_service,
+            "http://127.0.0.1:5001/generate_cards",
             json={"markdown_text": markdown}
         )
     except Exception as e:
@@ -113,6 +107,7 @@ def analyse_pdf():
         "flashcards": flashcards
     }), 200
 
+# Swagger-Setup
 @app.route('/swagger.json')
 def swagger_json():
     return jsonify(swagger_config)
@@ -132,5 +127,7 @@ swaggerui_blueprint = get_swaggerui_blueprint(
 )
 
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+
 if __name__ == '__main__':
+    print("Flask-Service läuft auf 0.0.0.0:5004")
     app.run(host="0.0.0.0", port=5004)
